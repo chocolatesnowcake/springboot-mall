@@ -1,5 +1,5 @@
 #  課程實作練習筆記(springboot-mall)
- **根據課程教學的步驟一步一步打造簡易的電商網站功能**
+ **根據課程教學的步驟一步一步打造簡易的功能**
  
  使用工具：IntelliJ IDEA、MySQL Server、API Tester
 

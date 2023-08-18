@@ -1,6 +1,7 @@
 package com.tsaipenny.springbootmall.service.impl;
 
 import com.tsaipenny.springbootmall.dao.UserDao;
+import com.tsaipenny.springbootmall.dto.UserLoginRequest;
 import com.tsaipenny.springbootmall.dto.UserRegisterRequest;
 import com.tsaipenny.springbootmall.model.User;
 import com.tsaipenny.springbootmall.service.UserService;
@@ -35,4 +36,20 @@ public class UserServiceImpl implements UserService {
         return userDao.getUserById(userId);
     }
 
+    @Override
+    public User login(UserLoginRequest userLoginRequest) {
+        User user = userDao.getUserByEmail(userLoginRequest.getEmail());
+        // 檢查信箱是否已被註冊
+        if (user == null){
+            log.warn("該信箱 {} 尚未註冊", userLoginRequest.getEmail());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        // 檢查信箱所對應的密碼是否正確
+        if (user.getPassword().equals(userLoginRequest.getPassword())){
+            return user;
+        }else {
+            log.warn("信箱 {} 密碼錯誤", userLoginRequest.getEmail());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+    }
 }

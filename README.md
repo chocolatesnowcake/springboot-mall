@@ -32,11 +32,34 @@
 註：使用SQL的LIMIT、OFFSET語法。
 
 * 實作要點：撰寫SQL指令時可以透過WHERE 1=1 來拼接語法。
-Example:
 ```java=
 String sql = "SELECT * FROM product WHERE 1=1";
 
 sql = sql + " AND category = FOOD AND product_name LIKE %蘋果% ORDER BY price";
+```
+
+---
+## 使用者功能
+### 註冊 / 登入功能
+#### **為確保資訊安全，實作要點：**
+**1. 避免將隱私資訊放入網址，因此使用 Request Body 傳遞參數**
+(註冊/登入功能 皆透過 Post 方法請求參數)。
+
+**2. 密碼不應該以明碼的方式顯示在資料庫。**
+(使用 MD5 生成密碼的雜湊值後放入資料庫)
+
+```java=
+String hashedPassword = DigestUtils.md5DigestAsHex(userLoginRequest.getPassword().getBytes());
+```
+
+**3. 回傳的User物件中不應包含密碼的資訊，因此使用 @JsonIgnore 來隱藏User物件中的Password。**
+```java=
+    private Integer userId;
+    private String email;
+    @JsonIgnore
+    private String password;
+    private Date createdDate;
+    private Date lastModifiedDate;
 ```
 
 

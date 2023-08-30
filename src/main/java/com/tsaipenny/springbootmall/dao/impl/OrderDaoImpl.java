@@ -1,6 +1,7 @@
 package com.tsaipenny.springbootmall.dao.impl;
 
 import com.tsaipenny.springbootmall.dao.OrderDao;
+import com.tsaipenny.springbootmall.dto.OrderQueryParams;
 import com.tsaipenny.springbootmall.model.Order;
 import com.tsaipenny.springbootmall.model.OrderItem;
 import com.tsaipenny.springbootmall.rowmapper.OrderItemRowMapper;
@@ -18,10 +19,39 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class OrderDapImpl implements OrderDao {
+public class OrderDaoImpl implements OrderDao {
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
+    @Override
+    public Integer countOrder(OrderQueryParams orderQueryParams) {
+        String sql = "SELECT count(*)  FROM `order` WHERE user_id = :userId";
+        Map<String, Object> map = new HashMap<>();
+        map.put("userId", orderQueryParams.getUserId());
+
+        Integer count = namedParameterJdbcTemplate.queryForObject(sql, map, Integer.class);
+        return count;
+    }
+
+    @Override
+    public List<Order> getOrders(OrderQueryParams orderQueryParams) {
+        String sql = "SELECT order_id, user_id, total_amount, created_date, last_modified_date " +
+                "FROM `order` WHERE user_id = :userId";
+        Map<String, Object> map = new HashMap<>();
+        map.put("userId", orderQueryParams.getUserId());
+
+        // 排序
+        sql = sql + " ORDER BY created_date DESC";
+
+        // 分頁
+        sql = sql + " LIMIT :limit OFFSET :offset";
+        map.put("limit", orderQueryParams.getLimit());
+        map.put("offset", orderQueryParams.getOffset());
+
+        List<Order> orderList = namedParameterJdbcTemplate.query(sql, map, new OrderRowMapper());
+
+        return orderList;
+    }
 
     @Override
     public List<OrderItem> getOrderItemsByOrderId(Integer orderId) {
